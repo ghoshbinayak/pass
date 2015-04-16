@@ -1,11 +1,18 @@
-#include "stdio.h"
+#include <stdio.h>
 #include "hashtab.h"
+
+#define MAXLENGTH 2000
 
 // function prototypes
 int pass1();
 
 // Global variables
-FILE * ifp;
+FILE * ifp; //input file
+FILE * ofp; //output file
+char * tokens[MAXLENGTH];
+char token[100];
+char * buffer;
+int location_counter = 0;
 
 int main(int argc, char const *argv[])
 {
@@ -17,14 +24,16 @@ int main(int argc, char const *argv[])
 	}
 
 	// Try to open the file
-	ifp = fopen(argv[1], "r");
-	if (ifp == NULL)
+	printf("%s\n", argv[1]);
+	if ((ifp = fopen(argv[1], "r")) == NULL)
 	{
 		printf("%s\n", "error: file not found");
 		exit(0);
 	}
 
+	// Run first pass
 	pass1();
+
 	// hash table declaration
 	hashtable_t *hashtable = ht_create( 65536 );
 
@@ -38,15 +47,25 @@ int main(int argc, char const *argv[])
 	printf( "%s\n", ht_get( hashtable, "key3" ) );
 	printf( "%s\n", ht_get( hashtable, "key4" ) );
 
-	// 
 	return 0;
 }
 
 int pass1(){
 	char c;
+	int i = 0;
 	while ((c = getc(ifp)) != EOF){
-
+		if (c != ' ' && c != '\t' && c != '\n')
+		{
+			token[i++] = c;
+		}
+		else {
+			if (i > 0)
+			{
+				token[i] = '\0';
+				i = 0;
+				printf("%s\n", token);
+			}
+		}
 	}
-
 	return 1;
 }
