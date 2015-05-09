@@ -1,9 +1,7 @@
-	.file	"hello.c"
+	.file	"countdown.c"
 	.section	.rodata
 .LC0:
-	.string	"hello world"
-.LC1:
-	.string	"hello again"
+	.string	"%d\n"
 	.text
 	.globl	main
 	.type	main, @function
@@ -15,12 +13,23 @@ main:
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
+	subq	$32, %rsp
+	movl	%edi, -20(%rbp)
+	movq	%rsi, -32(%rbp)
+	movl	$0, -4(%rbp)
+	jmp	.L2
+.L3:
+	movl	-4(%rbp), %eax
+	movl	%eax, %esi
 	movl	$.LC0, %edi
-	call	puts
-	movl	$.LC1, %edi
-	call	puts
 	movl	$0, %eax
-	popq	%rbp
+	call	printf
+	addl	$1, -4(%rbp)
+.L2:
+	cmpl	$9, -4(%rbp)
+	jle	.L3
+	movl	$0, %eax
+	leave
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
